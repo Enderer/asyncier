@@ -1,0 +1,12 @@
+---
+extends:
+  - "./node_modules/gts"
+rules:
+  eqeqeq:
+    - error
+    - always
+    - null: ignore
+ignorePatterns:
+  - "/*"
+  - "!/src"
+  - "**/*.test.ts"
