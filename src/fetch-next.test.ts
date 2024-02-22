@@ -1,4 +1,4 @@
-import {pipe} from 'lodash/fp';
+import {pipe} from 'ramda';
 import {fetchNext} from './fetch-next';
 
 describe('fetchNext', () => {
