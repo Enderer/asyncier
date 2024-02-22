@@ -6,30 +6,14 @@
  */
 export function fetchNext<T>(items: AsyncIterable<T>): AsyncIterable<T> {
   return {
-    [Symbol.asyncIterator]: () => {
+    async *[Symbol.asyncIterator]() {
       const iterator = items[Symbol.asyncIterator]();
-      let pending: Promise<IteratorResult<T>>;
-
-      return {
-        next: (): Promise<IteratorResult<T>> => {
-          // Get the pending request. If its the first call, pending
-          // will be null so call iterator.next to get the next record
-          const next = pending ?? iterator.next();
-
-          // Create a new promise that returns the value from iterator.next
-          // Call iterator.next only after the previous promise has resolved
-          // to ensure that all requests are made sequentially.
-          pending = new Promise(resolve =>
-            next
-              .then(() => resolve(iterator.next()))
-              .catch(() =>
-                resolve(Promise.resolve({done: true, value: undefined}))
-              )
-          );
-
-          return next;
-        },
-      };
+      let pending = await iterator.next();
+      while (!pending.done) {
+        const next = iterator.next();
+        yield pending.value;
+        pending = await next;
+      }
     },
   };
 }
